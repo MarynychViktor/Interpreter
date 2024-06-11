@@ -144,7 +144,7 @@ public class Scanner
     {
         while (IsAlphaNumeric(Peek())) Advance();
 
-        var text = _source.Substring(_start, _current);
+        var text = _source.Substring(_start, _current - _start);
         AddToken(_keywords.ContainsKey(text) ? _keywords[text] : TokenType.IDENTIFIER);
     }
 
@@ -169,7 +169,7 @@ public class Scanner
             while (IsDigit(Peek())) Advance();
         }
 
-        AddToken(TokenType.NUMBER, Double.Parse(_source.Substring(_start, _current)));
+        AddToken(TokenType.NUMBER, Double.Parse(_source.Substring(_start, _current - _start)));
     }
 
     private char PeekNext()
@@ -199,7 +199,7 @@ public class Scanner
 
         Advance();
 
-        var value = _source.Substring(_start + 1, _current - 1);
+        var value = _source.Substring(_start + 1, _current - _start - 1);
         AddToken(TokenType.STRING, value);
     }
 
@@ -228,7 +228,7 @@ public class Scanner
 
     private void AddToken(TokenType type, Object literal)
     {
-        var text = _source.Substring(_start, _current);
+        var text = _source.Substring(_start, _current  - _start);
         _tokens.Add(new Token(type, text, literal, _line));
     }
 
