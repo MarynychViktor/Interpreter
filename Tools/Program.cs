@@ -13,13 +13,12 @@ public class Program
         }
 
         var outputDir = args[0];
-        DefineAst(outputDir, "Expr", new List<string>()
-            {
+        DefineAst(outputDir, "Expr", [
                 "Binary   : Expr left, Token operatorr, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : Token operatorr, Expr right"
-            }
+            ]
         );
     }
 
@@ -27,12 +26,12 @@ public class Program
     {
         var path = $"{outputDir}/{baseName}.cs";
         using var writer = new StreamWriter(File.Open(path, FileMode.OpenOrCreate));
-        
+
         writer.WriteLine("namespace Interpreter;");
         writer.WriteLine();
         writer.WriteLine("public abstract class Expr");
         writer.WriteLine("{");
-        
+
         foreach (var type in types)
         {
             var className = type.Split(":")[0].Trim();

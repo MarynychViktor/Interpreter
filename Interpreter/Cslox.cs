@@ -7,6 +7,7 @@ namespace Interpreter;
 class Cslox
 {
     private static bool HadError { get; set; }
+
     public static void Main(string[] args)
     {
         if (args.Length > 1)
@@ -22,10 +23,10 @@ class Cslox
         {
             RunPrompt();
         }
+
         if (HadError) Environment.Exit(65);
     }
-    
-    
+
     private static void RunFile(string path)
     {
         var bytes = File.ReadAllBytes(path);
@@ -48,12 +49,11 @@ class Cslox
         }
     }
 
-
     private static void Run(string line)
     {
         var scanner = new Scanner(line);
         var tokens = scanner.ScanTokens();
-    
+
         foreach (var token in tokens)
         {
             Console.WriteLine(token);
@@ -64,10 +64,10 @@ class Cslox
     {
         Report(line, "", message);
     }
-    
-    public static void Report(int line, String where, String message) {
+
+    public static void Report(int line, String where, String message)
+    {
         Console.WriteLine("[line " + line + "] Error" + where + ": " + message);
         HadError = true;
     }
 }
-

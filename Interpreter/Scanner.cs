@@ -9,7 +9,6 @@ public class Scanner
     private int _line = 1;
     private static readonly Dictionary<string, TokenType> _keywords;
 
-
     static Scanner()
     {
         _keywords = new Dictionary<string, TokenType>();
@@ -174,8 +173,7 @@ public class Scanner
 
     private char PeekNext()
     {
-        if (_current + 1 >= _source.Length) return '\0';
-        return _source[_current + 1];
+        return _current + 1 >= _source.Length ? '\0' : _source[_current + 1];
     }
 
     private bool IsDigit(char c)
