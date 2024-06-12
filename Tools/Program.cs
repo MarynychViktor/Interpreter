@@ -38,6 +38,10 @@ public class Program
             var fields = type.Split(":")[1].Trim();
             DefineType(writer, baseName, className, fields);
         }
+        writer.WriteLine();
+        writer.WriteLine("     public abstract T Accept<T>(IVisitor<T> visitor);");
+        writer.WriteLine();
+        DefineVisitor(writer, baseName, types);
         writer.WriteLine("}");
         writer.Flush();
         writer.Close();
@@ -45,6 +49,28 @@ public class Program
 
     private static void DefineType(StreamWriter writer, string baseName, string className, string fields)
     {
-        writer.WriteLine($"    public class {className}({fields}) : {baseName};");
+        writer.WriteLine($"\tpublic class {className}({fields}) : {baseName} {{");
+        foreach (var field in fields.Split(", "))
+        {
+            var type = field.Split(" ")[0].Trim();
+            var name = field.Split(" ")[1].Trim();
+            writer.WriteLine($"\t\tpublic {type} {Char.ToUpper(name[0])}{name[1..]} => {name};");
+        }
+        writer.WriteLine();
+        writer.WriteLine("\t\tpublic override T Accept<T>(IVisitor<T> visitor) {");
+        writer.WriteLine($"\t\t\treturn visitor.Visit{className}{baseName}(this);");
+        writer.WriteLine("\t\t}");
+        writer.WriteLine("\t}");
+    }
+
+    private static void DefineVisitor(StreamWriter writer, string baseName, List<string> types)
+    {
+        writer.WriteLine("\tpublic interface IVisitor<T> {");
+        foreach (var type in types)
+        {
+            var typeName = type.Split(":")[0].Trim();
+            writer.WriteLine($"\t\tT Visit{typeName}{baseName}({typeName} {baseName.ToLower()});");
+        }
+        writer.WriteLine("\t}");
     }
 }

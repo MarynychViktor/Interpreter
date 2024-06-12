@@ -10,6 +10,12 @@ class Cslox
 
     public static void Main(string[] args)
     {
+        var expr = new Expr.Binary(
+            new Expr.Literal(1), 
+            new Token(TokenType.PLUS, "+", null, 0),
+            new Expr.Literal(2));
+        Console.WriteLine(expr.Accept((new AstPrinter())));
+return;
         if (args.Length > 1)
         {
             Console.WriteLine("Usage: cslox [script]");
