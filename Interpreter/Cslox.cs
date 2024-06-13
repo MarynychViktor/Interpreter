@@ -10,12 +10,6 @@ class Cslox
 
     public static void Main(string[] args)
     {
-        var expr = new Expr.Binary(
-            new Expr.Literal(1), 
-            new Token(TokenType.PLUS, "+", null, 0),
-            new Expr.Literal(2));
-        Console.WriteLine(expr.Accept((new AstPrinter())));
-return;
         if (args.Length > 1)
         {
             Console.WriteLine("Usage: cslox [script]");
@@ -59,16 +53,26 @@ return;
     {
         var scanner = new Scanner(line);
         var tokens = scanner.ScanTokens();
-
-        foreach (var token in tokens)
-        {
-            Console.WriteLine(token);
-        }
+        var parser = new Parser(tokens);
+        var expr = parser.Parse();
+        Console.WriteLine(new AstPrinter().Print(expr));
     }
 
     public static void Error(int line, string message)
     {
         Report(line, "", message);
+    }
+
+    public static void Error(Token token, string message)
+    {
+        if (token.type == TokenType.EOF)
+        {
+            Report(token.line, " at end", message);
+        }
+        else
+        {
+            Report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 
     public static void Report(int line, String where, String message)

@@ -4,6 +4,8 @@ namespace Interpreter;
 
 public class AstPrinter : Expr.IVisitor<string>
 {
+    public string Print(Expr expr) => expr.Accept(this);
+    
     public string VisitBinaryExpr(Expr.Binary expr)
     {
         return Parentisize(expr.Operatorr.lexeme, expr.Left, expr.Right);
