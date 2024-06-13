@@ -7,6 +7,8 @@ namespace Interpreter;
 class Cslox
 {
     private static bool HadError { get; set; }
+    private static bool HadRuntimeError { get; set; }
+    private static Interpreter _iterpreter = new Interpreter();
 
     public static void Main(string[] args)
     {
@@ -31,6 +33,9 @@ class Cslox
     {
         var bytes = File.ReadAllBytes(path);
         Run(Encoding.Default.GetString(bytes));
+        
+        if (HadError) Environment.Exit(65);
+        if (HadRuntimeError) Environment.Exit(70);
     }
 
     private static void RunPrompt()
@@ -55,7 +60,9 @@ class Cslox
         var tokens = scanner.ScanTokens();
         var parser = new Parser(tokens);
         var expr = parser.Parse();
-        Console.WriteLine(new AstPrinter().Print(expr));
+        if (HadError) return;
+
+        _iterpreter.Interpret(expr);
     }
 
     public static void Error(int line, string message)
@@ -79,5 +86,12 @@ class Cslox
     {
         Console.WriteLine("[line " + line + "] Error" + where + ": " + message);
         HadError = true;
+    }
+
+
+    public static void RuntimeError(RuntimeError error)
+    {
+        Console.WriteLine(error.Message + "\n[line " + error.Token.line + "]");
+        HadRuntimeError = true;
     }
 }

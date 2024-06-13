@@ -197,7 +197,7 @@ public class Scanner
 
         Advance();
 
-        var value = _source.Substring(_start + 1, _current - _start - 1);
+        var value = _source.Substring(_start + 1, _current - _start - 2);
         AddToken(TokenType.STRING, value);
     }
 
