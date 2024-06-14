@@ -5,16 +5,39 @@ public class Parser(List<Token> tokens, int current = 0)
 {
     class ParseError : Exception {}
 
-    public Expr Parse()
+    public List<Stmt> Parse()
     {
-        try
+        var statements = new List<Stmt>();
+        while (!IsAtEnd())
         {
-            return Expression();
+            statements.Add(Statement());
         }
-        catch (ParseError e)
+
+        return statements;
+    }
+
+    private Stmt Statement()
+    {
+        if (Match(TokenType.PRINT))
         {
-            return null;
+            return PrintStatement();
         }
+
+        return ExpressionStatement();
+    }
+
+    private Stmt ExpressionStatement()
+    {
+        var value = Expression();
+        Consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Expression(value);
+    }
+
+    private Stmt PrintStatement()
+    {
+        var value = Expression();
+        Consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
     }
 
     private Expr Expression()

@@ -59,10 +59,10 @@ class Cslox
         var scanner = new Scanner(line);
         var tokens = scanner.ScanTokens();
         var parser = new Parser(tokens);
-        var expr = parser.Parse();
+        var statements = parser.Parse();
         if (HadError) return;
 
-        _iterpreter.Interpret(expr);
+        _iterpreter.Interpret(statements);
     }
 
     public static void Error(int line, string message)

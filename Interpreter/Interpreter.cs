@@ -1,7 +1,26 @@
 namespace Interpreter;
 
-public class Interpreter : Expr.IVisitor<Object>
-{
+public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
+{    public void Interpret(List<Stmt> statements)
+    {
+        try
+        {
+            foreach (var statement in statements)
+            {
+                Execute(statement);
+            }
+        }
+        catch (RuntimeError e)
+        {
+            Cslox.RuntimeError(e);
+        }
+    }
+
+    private void Execute(Stmt statement)
+    {
+        statement.Accept(this);
+    }
+
     public void Interpret(Expr expr)
     {
         try
@@ -13,21 +32,6 @@ public class Interpreter : Expr.IVisitor<Object>
         {
             Cslox.RuntimeError(e);
         }
-    }
-
-    private string Stringify(object value)
-    {
-        if (value == null) return "nil";
-
-        if (value is double) {
-            String text = value.ToString();
-            if (text.EndsWith(".0")) {
-                text = text.Substring(0, text.Length - 2);
-            }
-            return text;
-        }
-
-        return value.ToString();
     }
 
     public object VisitBinaryExpr(Expr.Binary expr)
@@ -72,12 +76,6 @@ public class Interpreter : Expr.IVisitor<Object>
         }
     }
 
-    private void CheckNumberOperands(Token @operator, object left, object right)
-    {
-        if (left is double && right is double) return;
-        throw new RuntimeError(@operator, "Operand must be a number");
-    }
-
     public object VisitGroupingExpr(Expr.Grouping expr) => (Evaluate(expr));
 
     public object VisitLiteralExpr(Expr.Literal expr) => expr.Value;
@@ -95,6 +93,40 @@ public class Interpreter : Expr.IVisitor<Object>
         };
 
         return null;
+    }
+
+    public object VisitExpressionStmt(Stmt.Expression stmt)
+    {
+        Evaluate(stmt.Expr);
+        return null;
+    }
+
+    public object VisitPrintStmt(Stmt.Print stmt)
+    {
+        var value = Evaluate(stmt.Expr);
+        Console.WriteLine(Stringify(value));
+        return null;
+    }
+
+    private string Stringify(object value)
+    {
+        if (value == null) return "nil";
+
+        if (value is double) {
+            String text = value.ToString();
+            if (text.EndsWith(".0")) {
+                text = text.Substring(0, text.Length - 2);
+            }
+            return text;
+        }
+
+        return value.ToString();
+    }
+
+    private void CheckNumberOperands(Token @operator, object left, object right)
+    {
+        if (left is double && right is double) return;
+        throw new RuntimeError(@operator, "Operand must be a number");
     }
 
     private void CheckNumberOperand(Token @operator, object operand)
