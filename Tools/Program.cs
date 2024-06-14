@@ -17,13 +17,15 @@ public class Program
                 "Binary   : Expr left, Token operatorToken, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
-                "Unary    : Token operatorToken, Expr right"
+                "Unary    : Token operatorToken, Expr right",
+                "Variable : Token name",
             ]
         );
 
         DefineAst(outputDir, "Stmt", [
             "Expression : Expr expr",
-            "Print      : Expr expr"
+            "Print      : Expr expr",
+            "Var        : Token name, Expr initializer"
         ]);
     }
 

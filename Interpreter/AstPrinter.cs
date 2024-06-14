@@ -17,6 +17,11 @@ public class AstPrinter : Expr.IVisitor<string>
 
     public string VisitUnaryExpr(Expr.Unary expr) => Parentisize(expr.OperatorToken.lexeme, expr.Right);
 
+    public string VisitVariableExpr(Expr.Variable expr)
+    {
+        throw new NotImplementedException();
+    }
+
     private string Parentisize(String name, params Expr[] exprs) {
         StringBuilder builder = new StringBuilder();
 

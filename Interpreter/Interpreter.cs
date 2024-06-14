@@ -95,6 +95,11 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null;
     }
 
+    public object VisitVariableExpr(Expr.Variable expr)
+    {
+        throw new NotImplementedException();
+    }
+
     public object VisitExpressionStmt(Stmt.Expression stmt)
     {
         Evaluate(stmt.Expr);
@@ -106,6 +111,11 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         var value = Evaluate(stmt.Expr);
         Console.WriteLine(Stringify(value));
         return null;
+    }
+
+    public object VisitVarStmt(Stmt.Var stmt)
+    {
+        throw new NotImplementedException();
     }
 
     private string Stringify(object value)
