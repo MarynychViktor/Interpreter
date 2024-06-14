@@ -14,22 +14,27 @@ public class Program
 
         var outputDir = args[0];
         DefineAst(outputDir, "Expr", [
-                "Binary   : Expr left, Token operatorr, Expr right",
+                "Binary   : Expr left, Token operatorToken, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
-                "Unary    : Token operatorr, Expr right"
+                "Unary    : Token operatorToken, Expr right"
             ]
         );
+
+        DefineAst(outputDir, "Stmt", [
+            "Expression : Expr expr",
+            "Print      : Expr expr"
+        ]);
     }
 
     private static void DefineAst(string outputDir, string baseName, List<string> types)
     {
         var path = $"{outputDir}/{baseName}.cs";
-        using var writer = new StreamWriter(File.Open(path, FileMode.OpenOrCreate));
+        using var writer = new StreamWriter(File.Open(path, FileMode.OpenOrCreate | FileMode.Truncate));
 
         writer.WriteLine("namespace Interpreter;");
         writer.WriteLine();
-        writer.WriteLine("public abstract class Expr");
+        writer.WriteLine($"public abstract class {baseName}");
         writer.WriteLine("{");
 
         foreach (var type in types)
@@ -39,7 +44,7 @@ public class Program
             DefineType(writer, baseName, className, fields);
         }
         writer.WriteLine();
-        writer.WriteLine("     public abstract T Accept<T>(IVisitor<T> visitor);");
+        writer.WriteLine("\t\tpublic abstract T Accept<T>(IVisitor<T> visitor);");
         writer.WriteLine();
         DefineVisitor(writer, baseName, types);
         writer.WriteLine("}");

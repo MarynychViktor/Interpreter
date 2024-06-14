@@ -34,7 +34,7 @@ public class Interpreter : Expr.IVisitor<Object>
     {
         var left = Evaluate(expr.Left);
         var right = Evaluate(expr.Right);
-        switch (expr.Operatorr.type)
+        switch (expr.OperatorToken.type)
         {
             case TokenType.MINUS:
                 return (double)left - (double)right;
@@ -44,24 +44,24 @@ public class Interpreter : Expr.IVisitor<Object>
                 else if ((left is string) && (right is string))
                     return (string)left + (string)right;
 
-                throw new RuntimeError(expr.Operatorr, "Operands must be two numbers or two strings.");
+                throw new RuntimeError(expr.OperatorToken, "Operands must be two numbers or two strings.");
             case TokenType.STAR:
-                CheckNumberOperands(expr.Operatorr, left, right);
+                CheckNumberOperands(expr.OperatorToken, left, right);
                 return (double)left * (double)right;
             case TokenType.SLASH:
-                CheckNumberOperands(expr.Operatorr, left, right);
+                CheckNumberOperands(expr.OperatorToken, left, right);
                 return (double)left / (double)right;
             case TokenType.GREATER:
-                CheckNumberOperands(expr.Operatorr, left, right);
+                CheckNumberOperands(expr.OperatorToken, left, right);
                 return (double)left > (double)right;
             case TokenType.GREATER_EQUAL:
-                CheckNumberOperands(expr.Operatorr, left, right);
+                CheckNumberOperands(expr.OperatorToken, left, right);
                 return (double)left >= (double)right;
             case TokenType.LESS:
-                CheckNumberOperands(expr.Operatorr, left, right);
+                CheckNumberOperands(expr.OperatorToken, left, right);
                 return (double)left < (double)right;
             case TokenType.LESS_EQUAL:
-                CheckNumberOperands(expr.Operatorr, left, right);
+                CheckNumberOperands(expr.OperatorToken, left, right);
                 return (double)left <= (double)right;
             case TokenType.BANG_EQUAL:
                 return !IsEqual(left, right);
@@ -85,10 +85,10 @@ public class Interpreter : Expr.IVisitor<Object>
     public object VisitUnaryExpr(Expr.Unary expr)
     {
         var right = Evaluate(expr.Right);
-        switch (expr.Operatorr.type)
+        switch (expr.OperatorToken.type)
         {
             case TokenType.MINUS:
-                CheckNumberOperand(expr.Operatorr, right);
+                CheckNumberOperand(expr.OperatorToken, right);
                 return (double)right;
             case TokenType.BANG:
                 return IsTruthy(right);

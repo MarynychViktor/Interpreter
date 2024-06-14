@@ -2,9 +2,9 @@ namespace Interpreter;
 
 public abstract class Expr
 {
-	public class Binary(Expr left, Token operatorr, Expr right) : Expr {
+	public class Binary(Expr left, Token operatorToken, Expr right) : Expr {
 		public Expr Left => left;
-		public Token Operatorr => operatorr;
+		public Token OperatorToken => operatorToken;
 		public Expr Right => right;
 
 		public override T Accept<T>(IVisitor<T> visitor) {
@@ -25,8 +25,8 @@ public abstract class Expr
 			return visitor.VisitLiteralExpr(this);
 		}
 	}
-	public class Unary(Token operatorr, Expr right) : Expr {
-		public Token Operatorr => operatorr;
+	public class Unary(Token operatorToken, Expr right) : Expr {
+		public Token OperatorToken => operatorToken;
 		public Expr Right => right;
 
 		public override T Accept<T>(IVisitor<T> visitor) {
@@ -34,7 +34,7 @@ public abstract class Expr
 		}
 	}
 
-     public abstract T Accept<T>(IVisitor<T> visitor);
+		public abstract T Accept<T>(IVisitor<T> visitor);
 
 	public interface IVisitor<T> {
 		T VisitBinaryExpr(Binary expr);

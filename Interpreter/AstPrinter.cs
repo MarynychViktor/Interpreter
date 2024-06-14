@@ -8,14 +8,14 @@ public class AstPrinter : Expr.IVisitor<string>
     
     public string VisitBinaryExpr(Expr.Binary expr)
     {
-        return Parentisize(expr.Operatorr.lexeme, expr.Left, expr.Right);
+        return Parentisize(expr.OperatorToken.lexeme, expr.Left, expr.Right);
     }
 
     public string VisitGroupingExpr(Expr.Grouping expr) => Parentisize("group", expr.Expression);
 
     public string VisitLiteralExpr(Expr.Literal expr) => expr == null ? "nil" : expr.Value.ToString();
 
-    public string VisitUnaryExpr(Expr.Unary expr) => Parentisize(expr.Operatorr.lexeme, expr.Right);
+    public string VisitUnaryExpr(Expr.Unary expr) => Parentisize(expr.OperatorToken.lexeme, expr.Right);
 
     private string Parentisize(String name, params Expr[] exprs) {
         StringBuilder builder = new StringBuilder();
