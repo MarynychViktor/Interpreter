@@ -2,6 +2,14 @@ namespace Interpreter;
 
 public abstract class Expr
 {
+	public class Assign(Token name, Expr value) : Expr {
+		public Token Name => name;
+		public Expr Value => value;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitAssignExpr(this);
+		}
+	}
 	public class Binary(Expr left, Token operatorToken, Expr right) : Expr {
 		public Expr Left => left;
 		public Token OperatorToken => operatorToken;
@@ -44,6 +52,7 @@ public abstract class Expr
 		public abstract T Accept<T>(IVisitor<T> visitor);
 
 	public interface IVisitor<T> {
+		T VisitAssignExpr(Assign expr);
 		T VisitBinaryExpr(Binary expr);
 		T VisitGroupingExpr(Grouping expr);
 		T VisitLiteralExpr(Literal expr);

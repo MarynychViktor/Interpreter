@@ -1,7 +1,10 @@
 namespace Interpreter;
 
 public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
-{    public void Interpret(List<Stmt> statements)
+{
+    private LanguageEnvironment Environment = new();
+    
+    public void Interpret(List<Stmt> statements)
     {
         try
         {
@@ -32,6 +35,13 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         {
             Cslox.RuntimeError(e);
         }
+    }
+
+    public object VisitAssignExpr(Expr.Assign expr)
+    {
+        var value = Evaluate(expr.Value);
+        Environment.Assign(expr.Name, value);
+        return value;
     }
 
     public object VisitBinaryExpr(Expr.Binary expr)
@@ -95,10 +105,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null;
     }
 
-    public object VisitVariableExpr(Expr.Variable expr)
-    {
-        throw new NotImplementedException();
-    }
+    public object VisitVariableExpr(Expr.Variable expr) => Environment.Get(expr.Name);
 
     public object VisitExpressionStmt(Stmt.Expression stmt)
     {
@@ -115,7 +122,13 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitVarStmt(Stmt.Var stmt)
     {
-        throw new NotImplementedException();
+        object value = null;
+        if (stmt.Initializer != null)
+        {
+            value = Evaluate(stmt.Initializer);
+        }
+        Environment.Define(stmt.Name.lexeme, value);
+        return null;
     }
 
     private string Stringify(object value)
