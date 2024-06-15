@@ -39,7 +39,7 @@ public class Parser(List<Token> tokens, int current = 0)
     {
         var identifier = Consume(TokenType.IDENTIFIER, "Expect variable name.");
 
-        Expr initializer = null;
+        Expr? initializer = null;
         if (Match(TokenType.EQUAL))
         {
             initializer = Expression();
@@ -52,6 +52,11 @@ public class Parser(List<Token> tokens, int current = 0)
 
     private Stmt Statement()
     {
+        if (Match(TokenType.FOR))
+        {
+            return ForStatement();
+        }
+
         if (Match(TokenType.IF))
         {
             return IfStatement();
@@ -73,6 +78,56 @@ public class Parser(List<Token> tokens, int current = 0)
         }
 
         return ExpressionStatement();
+    }
+
+    private Stmt ForStatement()
+    {
+        Consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+        Stmt? initializer = null;
+        if (Match(TokenType.VAR))
+        {
+            initializer = VarDeclaration();
+        }
+        else if (!Match(TokenType.SEMICOLON))
+        {
+            initializer = ExpressionStatement();
+        }
+
+        Expr? condition = null;
+        if (!Check(TokenType.SEMICOLON))
+        {
+            condition = Expression();
+        }
+        Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+        Expr? increment = null;
+        if (!Check(TokenType.RIGHT_PAREN))
+        {
+            increment = Expression();
+        }
+        Consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+        var body = Statement();
+        
+        if (increment != null)
+        {
+            body = new Stmt.Block(
+            [
+                body,
+                new Stmt.Expression(increment)
+            ]);
+        }
+
+        if (condition == null)
+        {
+            condition = new Expr.Literal(true);
+        }
+
+        body = new Stmt.While(condition, body);
+
+        if (initializer != null) {
+            body = new Stmt.Block([initializer, body]);
+        }
+
+        return body;
     }
 
     private Stmt WhileStatement()
