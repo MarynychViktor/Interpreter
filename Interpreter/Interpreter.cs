@@ -153,13 +153,23 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitIfStmt(Stmt.If stmt)
     {
-        if (IsTruthy(stmt.Condition))
+        if (IsTruthy(Evaluate(stmt.Condition)))
         {
             Execute(stmt.ThenBranch);
         }
-        else
+        else if (stmt.ElseBranch != null)
         {
             Execute(stmt.ElseBranch);
+        }
+
+        return null;
+    }
+
+    public object VisitWhileStmt(Stmt.While stmt)
+    {
+        while (IsTruthy(Evaluate(stmt.Condition)))
+        {
+            Execute(stmt.Statement);
         }
 
         return null;

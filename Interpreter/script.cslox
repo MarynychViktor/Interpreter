@@ -1,19 +1,9 @@
-var a = "global a";
-var b = "global b";
-var c = "global c";
+var a = 1;
+var b = 5;
+
+while (b > 0)
 {
-  var a = "outer a";
-  var b = "outer b";
-  {
-    var a = "inner a";
-    print a;
-    print b;
-    print c;
-  }
-  print a;
+  b = b - 1;
+  print "b is: ";
   print b;
-  print c;
 }
-print a;
-print b;
-print c;

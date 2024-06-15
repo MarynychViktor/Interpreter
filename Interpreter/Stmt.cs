@@ -25,6 +25,14 @@ public abstract class Stmt
 			return visitor.VisitIfStmt(this);
 		}
 	}
+	public class While(Expr condition, Stmt statement) : Stmt {
+		public Expr Condition => condition;
+		public Stmt Statement => statement;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitWhileStmt(this);
+		}
+	}
 	public class Print(Expr expr) : Stmt {
 		public Expr Expr => expr;
 
@@ -47,6 +55,7 @@ public abstract class Stmt
 		T VisitBlockStmt(Block stmt);
 		T VisitExpressionStmt(Expression stmt);
 		T VisitIfStmt(If stmt);
+		T VisitWhileStmt(While stmt);
 		T VisitPrintStmt(Print stmt);
 		T VisitVarStmt(Var stmt);
 	}

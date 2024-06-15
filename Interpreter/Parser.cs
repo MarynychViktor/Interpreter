@@ -56,6 +56,11 @@ public class Parser(List<Token> tokens, int current = 0)
         {
             return IfStatement();
         }
+
+        if (Match(TokenType.WHILE))
+        {
+            return WhileStatement();
+        }
         
         if (Match(TokenType.PRINT))
         {
@@ -68,6 +73,15 @@ public class Parser(List<Token> tokens, int current = 0)
         }
 
         return ExpressionStatement();
+    }
+
+    private Stmt WhileStatement()
+    {
+        Consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+        var condition = Expression();
+        Consume(TokenType.RIGHT_PAREN, "Expect '(' after 'if'.");
+        var statement = Statement();
+        return new Stmt.While(condition, statement);
     }
 
     private Stmt IfStatement()
