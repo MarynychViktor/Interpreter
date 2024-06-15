@@ -86,6 +86,21 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         }
     }
 
+    public object VisitLogicalExpr(Expr.Logical expr)
+    {
+        var left = Evaluate(expr.Left);
+        if (expr.OperatorToken.type == TokenType.OR)
+        {
+            if (IsTruthy(left)) return left;
+        }
+        else
+        {
+            if (!IsTruthy(left)) return Evaluate(expr.Right);
+        }
+
+        return Evaluate(expr.Right);
+    }
+
     public object VisitGroupingExpr(Expr.Grouping expr) => (Evaluate(expr));
 
     public object VisitLiteralExpr(Expr.Literal expr) => expr.Value;
@@ -133,6 +148,20 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
     public object VisitExpressionStmt(Stmt.Expression stmt)
     {
         Evaluate(stmt.Expr);
+        return null;
+    }
+
+    public object VisitIfStmt(Stmt.If stmt)
+    {
+        if (IsTruthy(stmt.Condition))
+        {
+            Execute(stmt.ThenBranch);
+        }
+        else
+        {
+            Execute(stmt.ElseBranch);
+        }
+
         return null;
     }
 

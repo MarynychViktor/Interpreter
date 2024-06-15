@@ -16,6 +16,7 @@ public class Program
         DefineAst(outputDir, "Expr", [
                 "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operatorToken, Expr right",
+                "Logical  : Expr left, Token operatorToken, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : Token operatorToken, Expr right",
@@ -26,6 +27,7 @@ public class Program
         DefineAst(outputDir, "Stmt", [
             "Block      : List<Stmt> statements",
             "Expression : Expr expr",
+            "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
             "Print      : Expr expr",
             "Var        : Token name, Expr initializer"
         ]);

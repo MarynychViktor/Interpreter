@@ -16,6 +16,15 @@ public abstract class Stmt
 			return visitor.VisitExpressionStmt(this);
 		}
 	}
+	public class If(Expr condition, Stmt thenBranch, Stmt elseBranch) : Stmt {
+		public Expr Condition => condition;
+		public Stmt ThenBranch => thenBranch;
+		public Stmt ElseBranch => elseBranch;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitIfStmt(this);
+		}
+	}
 	public class Print(Expr expr) : Stmt {
 		public Expr Expr => expr;
 
@@ -37,6 +46,7 @@ public abstract class Stmt
 	public interface IVisitor<T> {
 		T VisitBlockStmt(Block stmt);
 		T VisitExpressionStmt(Expression stmt);
+		T VisitIfStmt(If stmt);
 		T VisitPrintStmt(Print stmt);
 		T VisitVarStmt(Var stmt);
 	}

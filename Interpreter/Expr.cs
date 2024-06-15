@@ -19,6 +19,15 @@ public abstract class Expr
 			return visitor.VisitBinaryExpr(this);
 		}
 	}
+	public class Logical(Expr left, Token operatorToken, Expr right) : Expr {
+		public Expr Left => left;
+		public Token OperatorToken => operatorToken;
+		public Expr Right => right;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitLogicalExpr(this);
+		}
+	}
 	public class Grouping(Expr expression) : Expr {
 		public Expr Expression => expression;
 
@@ -54,6 +63,7 @@ public abstract class Expr
 	public interface IVisitor<T> {
 		T VisitAssignExpr(Assign expr);
 		T VisitBinaryExpr(Binary expr);
+		T VisitLogicalExpr(Logical expr);
 		T VisitGroupingExpr(Grouping expr);
 		T VisitLiteralExpr(Literal expr);
 		T VisitUnaryExpr(Unary expr);

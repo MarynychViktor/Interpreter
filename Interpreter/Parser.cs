@@ -52,6 +52,11 @@ public class Parser(List<Token> tokens, int current = 0)
 
     private Stmt Statement()
     {
+        if (Match(TokenType.IF))
+        {
+            return IfStatement();
+        }
+        
         if (Match(TokenType.PRINT))
         {
             return PrintStatement();
@@ -63,6 +68,21 @@ public class Parser(List<Token> tokens, int current = 0)
         }
 
         return ExpressionStatement();
+    }
+
+    private Stmt IfStatement()
+    {
+        Consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        var condition = Expression();
+        Consume(TokenType.RIGHT_PAREN, "Expect '(' after 'if'.");
+        var thenBranch = Statement();
+        Stmt elseBranch = null;
+        if (Match(TokenType.ELSE))
+        {
+            elseBranch = Statement();
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
     }
 
     private List<Stmt> Block()
@@ -99,7 +119,7 @@ public class Parser(List<Token> tokens, int current = 0)
 
     private Expr Assignment()
     {
-        var expr = Equality();
+        var expr = Or();
 
         if (Match(TokenType.EQUAL))
         {
@@ -113,6 +133,33 @@ public class Parser(List<Token> tokens, int current = 0)
             }
 
             Error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
+    }
+
+    private Expr Or()
+    {
+        Expr expr = And();
+
+        while (Match(TokenType.OR)) {
+            Token @operator = Previous();
+            Expr right = And();
+            expr = new Expr.Logical(expr, @operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr And()
+    {
+        var expr = Equality();
+
+        while (Match(TokenType.AND))
+        {
+            Token @operator = Previous();
+            Expr right = Equality();
+            expr = new Expr.Logical(expr, @operator, right);
         }
 
         return expr;
