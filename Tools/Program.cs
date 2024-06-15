@@ -24,6 +24,7 @@ public class Program
         );
 
         DefineAst(outputDir, "Stmt", [
+            "Block      : List<Stmt> statements",
             "Expression : Expr expr",
             "Print      : Expr expr",
             "Var        : Token name, Expr initializer"

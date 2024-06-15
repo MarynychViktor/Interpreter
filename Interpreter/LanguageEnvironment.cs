@@ -2,7 +2,17 @@ namespace Interpreter;
 
 public class LanguageEnvironment
 {
+    public readonly LanguageEnvironment? Enclosing;
     private readonly Dictionary<string, object> values = new();
+
+    public LanguageEnvironment()
+    {
+    }
+
+    public LanguageEnvironment(LanguageEnvironment enclosing)
+    {
+        Enclosing = enclosing;
+    }
 
     public void Define(string name, object value)
     {
@@ -16,6 +26,11 @@ public class LanguageEnvironment
             return values[name.lexeme];
         }
 
+        if (Enclosing != null)
+        {
+            return Enclosing.Get(name);
+        }
+
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
     
@@ -24,6 +39,12 @@ public class LanguageEnvironment
         if (values.ContainsKey(name.lexeme))
         {
             values[name.lexeme] = value;
+            return;
+        }
+
+        if (Enclosing != null)
+        {
+            Enclosing.Assign(name, value);
             return;
         }
 

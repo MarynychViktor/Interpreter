@@ -2,6 +2,13 @@ namespace Interpreter;
 
 public abstract class Stmt
 {
+	public class Block(List<Stmt> statements) : Stmt {
+		public List<Stmt> Statements => statements;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitBlockStmt(this);
+		}
+	}
 	public class Expression(Expr expr) : Stmt {
 		public Expr Expr => expr;
 
@@ -28,6 +35,7 @@ public abstract class Stmt
 		public abstract T Accept<T>(IVisitor<T> visitor);
 
 	public interface IVisitor<T> {
+		T VisitBlockStmt(Block stmt);
 		T VisitExpressionStmt(Expression stmt);
 		T VisitPrintStmt(Print stmt);
 		T VisitVarStmt(Var stmt);

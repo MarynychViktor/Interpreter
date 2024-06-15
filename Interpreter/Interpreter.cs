@@ -107,6 +107,29 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitVariableExpr(Expr.Variable expr) => Environment.Get(expr.Name);
 
+    public object VisitBlockStmt(Stmt.Block stmt)
+    {
+        ExecuteBlock(stmt.Statements, new LanguageEnvironment(Environment));
+        return null;
+    }
+
+    private void ExecuteBlock(List<Stmt> statements, LanguageEnvironment environment)
+    {
+        var prevEnvironment = Environment;
+        try
+        {
+            Environment = environment;
+            foreach (var statement in statements)
+            {
+                Execute(statement);
+            }
+        }
+        finally
+        {
+            Environment = prevEnvironment;
+        }
+    }
+
     public object VisitExpressionStmt(Stmt.Expression stmt)
     {
         Evaluate(stmt.Expr);
