@@ -62,6 +62,11 @@ class Cslox
         var statements = parser.Parse();
         if (HadError) return;
 
+        var resolver = new Resolver(_iterpreter);
+        resolver.Resolve(statements);
+        // Stop if there was a resolution error.
+        if (HadError) return;
+        
         _iterpreter.Interpret(statements);
     }
 

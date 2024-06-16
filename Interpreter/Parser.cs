@@ -144,6 +144,7 @@ public class Parser(List<Token> tokens, int current = 0)
             condition = Expression();
         }
         Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
         Expr? increment = null;
         if (!Check(TokenType.RIGHT_PAREN))
         {
@@ -154,11 +155,19 @@ public class Parser(List<Token> tokens, int current = 0)
         
         if (increment != null)
         {
-            body = new Stmt.Block(
-            [
-                body,
-                new Stmt.Expression(increment)
-            ]);
+            if (body is Stmt.Block block)
+            {
+                block.Statements.Add(new Stmt.Expression(increment));
+            }
+            else
+            {
+                throw new Exception("Unexpected body format");
+            }
+            // body = new Stmt.Block(
+            // [
+            //     body,
+            //     new Stmt.Expression(increment)
+            // ]);
         }
 
         if (condition == null)
