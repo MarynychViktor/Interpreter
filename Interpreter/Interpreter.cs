@@ -2,7 +2,14 @@ namespace Interpreter;
 
 public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 {
-    private LanguageEnvironment Environment = new();
+    public readonly LanguageEnvironment Globals = new();
+    private LanguageEnvironment Environment;
+
+    public Interpreter()
+    {
+        Environment = Globals;
+        Globals.Define("clock", new ClockCallable());
+    }
     
     public void Interpret(List<Stmt> statements)
     {
@@ -86,6 +93,23 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         }
     }
 
+    public object VisitCallExpr(Expr.Call expr)
+    {
+        var callee = Evaluate(expr.Callee);
+
+        var arguments = expr.Arguments.Select(Evaluate).ToList();
+        if (callee is not ICsloxCallable function) {
+            throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
+        }
+        if (arguments.Count() != function.Arity()) {
+            throw new RuntimeError(expr.Paren, "Expected " +
+                                               function.Arity() + " arguments but got " +
+                                               arguments.Count() + ".");
+        }
+
+        return function.Call(this, arguments);
+    }
+
     public object VisitLogicalExpr(Expr.Logical expr)
     {
         var left = Evaluate(expr.Left);
@@ -128,7 +152,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null;
     }
 
-    private void ExecuteBlock(List<Stmt> statements, LanguageEnvironment environment)
+    public void ExecuteBlock(List<Stmt> statements, LanguageEnvironment environment)
     {
         var prevEnvironment = Environment;
         try
@@ -165,6 +189,13 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null;
     }
 
+    public object VisitFunctionStmt(Stmt.Function stmt)
+    {
+        var function = new CsloxFunction(stmt);
+        Environment.Define(stmt.Name.lexeme, function);
+        return null;
+    }
+
     public object VisitWhileStmt(Stmt.While stmt)
     {
         while (IsTruthy(Evaluate(stmt.Condition)))
@@ -180,6 +211,13 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         var value = Evaluate(stmt.Expr);
         Console.WriteLine(Stringify(value));
         return null;
+    }
+
+    public object VisitReturnStmt(Stmt.Return stmt)
+    {
+        Object value = null;
+        if (stmt.Value != null) value = Evaluate(stmt.Value);
+        throw new Return(value);
     }
 
     public object VisitVarStmt(Stmt.Var stmt)

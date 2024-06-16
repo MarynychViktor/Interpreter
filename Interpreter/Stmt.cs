@@ -25,6 +25,15 @@ public abstract class Stmt
 			return visitor.VisitIfStmt(this);
 		}
 	}
+	public class Function(Token name, List<Token> funParams, List<Stmt> body) : Stmt {
+		public Token Name => name;
+		public List<Token> FunParams => funParams;
+		public List<Stmt> Body => body;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitFunctionStmt(this);
+		}
+	}
 	public class While(Expr condition, Stmt statement) : Stmt {
 		public Expr Condition => condition;
 		public Stmt Statement => statement;
@@ -38,6 +47,14 @@ public abstract class Stmt
 
 		public override T Accept<T>(IVisitor<T> visitor) {
 			return visitor.VisitPrintStmt(this);
+		}
+	}
+	public class Return(Token keyword, Expr value) : Stmt {
+		public Token Keyword => keyword;
+		public Expr Value => value;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitReturnStmt(this);
 		}
 	}
 	public class Var(Token name, Expr initializer) : Stmt {
@@ -55,8 +72,10 @@ public abstract class Stmt
 		T VisitBlockStmt(Block stmt);
 		T VisitExpressionStmt(Expression stmt);
 		T VisitIfStmt(If stmt);
+		T VisitFunctionStmt(Function stmt);
 		T VisitWhileStmt(While stmt);
 		T VisitPrintStmt(Print stmt);
+		T VisitReturnStmt(Return stmt);
 		T VisitVarStmt(Var stmt);
 	}
 }

@@ -19,6 +19,15 @@ public abstract class Expr
 			return visitor.VisitBinaryExpr(this);
 		}
 	}
+	public class Call(Expr callee, Token paren, List<Expr> arguments) : Expr {
+		public Expr Callee => callee;
+		public Token Paren => paren;
+		public List<Expr> Arguments => arguments;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitCallExpr(this);
+		}
+	}
 	public class Logical(Expr left, Token operatorToken, Expr right) : Expr {
 		public Expr Left => left;
 		public Token OperatorToken => operatorToken;
@@ -63,6 +72,7 @@ public abstract class Expr
 	public interface IVisitor<T> {
 		T VisitAssignExpr(Assign expr);
 		T VisitBinaryExpr(Binary expr);
+		T VisitCallExpr(Call expr);
 		T VisitLogicalExpr(Logical expr);
 		T VisitGroupingExpr(Grouping expr);
 		T VisitLiteralExpr(Literal expr);
