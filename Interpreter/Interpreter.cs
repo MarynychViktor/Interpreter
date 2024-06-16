@@ -191,7 +191,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitFunctionStmt(Stmt.Function stmt)
     {
-        var function = new CsloxFunction(stmt);
+        var function = new CsloxFunction(stmt, Environment);
         Environment.Define(stmt.Name.lexeme, function);
         return null;
     }
