@@ -4,9 +4,11 @@ public class CsloxFunction : ICsloxCallable
 {
     private readonly Stmt.Function _declaration;
     private readonly LanguageEnvironment _closure;
+    private bool _isInitializer;
 
-    public CsloxFunction(Stmt.Function declaration, LanguageEnvironment closure)
+    public CsloxFunction(Stmt.Function declaration, LanguageEnvironment closure, bool isInitializer)
     {
+        _isInitializer = isInitializer;
         _declaration = declaration;
         _closure = closure;
     }
@@ -29,9 +31,11 @@ public class CsloxFunction : ICsloxCallable
         }
         catch (Return returnValue)
         {
+            if (_isInitializer) return _closure.GetAt(0, "this");
+
             return returnValue.Value;
         }
-
+        if (_isInitializer) return _closure.GetAt(0, "this");
         return null;
     }
 
@@ -41,6 +45,6 @@ public class CsloxFunction : ICsloxCallable
     {
         var environment = new LanguageEnvironment(_closure);
         environment.Define("this", instance);
-        return new CsloxFunction(_declaration, environment);
+        return new CsloxFunction(_declaration, environment, _isInitializer);
     }
 }

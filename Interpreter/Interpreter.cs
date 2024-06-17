@@ -218,7 +218,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
         foreach (var method in stmt.Methods)
         {
-            var function = new CsloxFunction(method, Environment);
+            var function = new CsloxFunction(method, Environment, method.Name.lexeme.Equals("init"));
             methods.Add(method.Name.lexeme, function);
         }
 
@@ -266,7 +266,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitFunctionStmt(Stmt.Function stmt)
     {
-        var function = new CsloxFunction(stmt, Environment);
+        var function = new CsloxFunction(stmt, Environment, false);
         Environment.Define(stmt.Name.lexeme, function);
         return null;
     }

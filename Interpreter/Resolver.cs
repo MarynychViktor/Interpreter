@@ -125,6 +125,10 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         foreach (var method in stmt.Methods)
         {
             var declaration = FunctionType.METHOD;
+            if (method.Name.lexeme.Equals("init")) {
+                declaration = FunctionType.INITIALIZER;
+            }
+
             ResolveFunction(method, declaration);
         }
         
@@ -220,6 +224,10 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         }
 
         if (stmt.Value != null) {
+            if (currentFunction == FunctionType.INITIALIZER) {
+                Cslox.Error(stmt.Keyword, "Can't return a value from an initializer.");
+            }
+
             Resolve(stmt.Value);
         }
 
@@ -257,6 +265,7 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
 enum FunctionType {
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD,
 }
 
