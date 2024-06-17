@@ -76,6 +76,13 @@ public abstract class Expr
 			return visitor.VisitUnaryExpr(this);
 		}
 	}
+	public class This(Token keyword) : Expr {
+		public Token Keyword => keyword;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitThisExpr(this);
+		}
+	}
 	public class Variable(Token name) : Expr {
 		public Token Name => name;
 
@@ -96,6 +103,7 @@ public abstract class Expr
 		T VisitGroupingExpr(Grouping expr);
 		T VisitLiteralExpr(Literal expr);
 		T VisitUnaryExpr(Unary expr);
+		T VisitThisExpr(This expr);
 		T VisitVariableExpr(Variable expr);
 	}
 }

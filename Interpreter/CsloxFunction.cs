@@ -36,4 +36,11 @@ public class CsloxFunction : ICsloxCallable
     }
 
     public int Arity() => _declaration.FunParams.Count;
+
+    public CsloxFunction Bind(CsloxInstance instance)
+    {
+        var environment = new LanguageEnvironment(_closure);
+        environment.Define("this", instance);
+        return new CsloxFunction(_declaration, environment);
+    }
 }

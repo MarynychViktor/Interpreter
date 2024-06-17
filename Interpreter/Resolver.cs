@@ -4,7 +4,8 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
 {
     private readonly Stack<Dictionary<string, bool>> _scopes = new();
     private FunctionType currentFunction = FunctionType.NONE;
-    
+    private ClassType currentClass = ClassType.NONE;
+
     public object VisitAssignExpr(Expr.Assign expr)
     {
         Resolve(expr.Value);
@@ -33,7 +34,7 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
 
     public object VisitGetExpr(Expr.Get expr)
     {
-        Resolve(expr);
+        Resolve(expr.Obj);
         return null;
     }
 
@@ -65,6 +66,17 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
     public object VisitUnaryExpr(Expr.Unary expr)
     {
         Resolve(expr.Right);
+        return null;
+    }
+
+    public object VisitThisExpr(Expr.This expr)
+    {
+        if (currentClass == ClassType.NONE) {
+            Cslox.Error(expr.Keyword, "Can't use 'this' outside of a class.");
+            return null;
+        }
+
+        ResolveLocal(expr, expr.Keyword);
         return null;
     }
 
@@ -102,8 +114,22 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
 
     public object VisitClassStmt(Stmt.Class stmt)
     {
+        ClassType enclosingClass = currentClass;
+        currentClass = ClassType.CLASS;
         Declare(stmt.Name);
         Define(stmt.Name);
+        BeginScope();
+
+        _scopes.Peek().Add("this", true);
+        
+        foreach (var method in stmt.Methods)
+        {
+            var declaration = FunctionType.METHOD;
+            ResolveFunction(method, declaration);
+        }
+        
+        EndScope();
+        currentClass = enclosingClass;
         return null;
     }
 
@@ -230,5 +256,12 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
 
 enum FunctionType {
     NONE,
-    FUNCTION
+    FUNCTION,
+    METHOD,
+}
+
+enum ClassType
+{
+    NONE,
+    CLASS,
 }

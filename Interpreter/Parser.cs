@@ -276,7 +276,7 @@ public class Parser(List<Token> tokens, int current = 0)
             }
             else if (expr is Expr.Get getExpr)
             {
-                return new Expr.Set(getExpr, getExpr.Name, value);
+                return new Expr.Set(getExpr.Obj, getExpr.Name, value);
             }
 
             Error(equals, "Invalid assignment target.");
@@ -429,6 +429,7 @@ public class Parser(List<Token> tokens, int current = 0)
         if (Match(TokenType.NUMBER, TokenType.STRING)) {
             return new Expr.Literal(Previous().literal);
         }
+        if (Match(TokenType.THIS)) return new Expr.This(Previous());
 
         if (Match(TokenType.LEFT_PAREN)) {
             Expr expr = Expression();

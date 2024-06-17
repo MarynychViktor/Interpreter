@@ -3,10 +3,12 @@ namespace Interpreter;
 
 public class CsloxClass : ICsloxCallable
 {
+    private readonly Dictionary<string, CsloxFunction> _methods;
     public string Name { get; }
 
-    public CsloxClass(string name)
+    public CsloxClass(string name, Dictionary<string, CsloxFunction> methods)
     {
+        _methods = methods;
         Name = name;
     }
 
@@ -21,5 +23,14 @@ public class CsloxClass : ICsloxCallable
     public int Arity()
     {
         return 0;
+    }
+
+    public CsloxFunction FindMethod(string name)
+    {
+        if (_methods.ContainsKey(name)) {
+            return _methods[name];
+        }
+
+        return null;
     }
 }

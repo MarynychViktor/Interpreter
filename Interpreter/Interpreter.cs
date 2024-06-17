@@ -182,12 +182,17 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null;
     }
 
+    public object VisitThisExpr(Expr.This expr)
+    {
+        return LookUpVariable(expr.Keyword, expr);
+    }
+
     public object VisitVariableExpr(Expr.Variable expr)
     {
         return LookUpVariable(expr.Name, expr);
     }
 
-    private object LookUpVariable(Token name, Expr.Variable expr)
+    private object LookUpVariable(Token name, Expr expr)
     {
         int? distance = _locals.TryGetValue(expr, out var local) ? local : null;
         if (distance != null)
@@ -209,7 +214,15 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
     public object VisitClassStmt(Stmt.Class stmt)
     {
         Environment.Define(stmt.Name.lexeme, null);
-        var klass = new CsloxClass(stmt.Name.lexeme);
+        var methods = new Dictionary<string, CsloxFunction>();
+
+        foreach (var method in stmt.Methods)
+        {
+            var function = new CsloxFunction(method, Environment);
+            methods.Add(method.Name.lexeme, function);
+        }
+
+        var klass = new CsloxClass(stmt.Name.lexeme, methods);
         Environment.Assign(stmt.Name, klass);
         return null;
     }

@@ -23,6 +23,7 @@ public class Program
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : Token operatorToken, Expr right",
+                "This     : Token keyword",
                 "Variable : Token name",
             ]
         );
