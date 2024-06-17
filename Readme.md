@@ -1,2 +1,2 @@
-## Interpreter...
-TODO: to be described
+## Interpreter 
+Interpreter implemented for lox language, following "Crafting Interpreters" by R. Nystrom
