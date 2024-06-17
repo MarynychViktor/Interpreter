@@ -28,6 +28,23 @@ public abstract class Expr
 			return visitor.VisitCallExpr(this);
 		}
 	}
+	public class Get(Expr obj, Token name) : Expr {
+		public Expr Obj => obj;
+		public Token Name => name;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitGetExpr(this);
+		}
+	}
+	public class Set(Expr obj, Token name, Expr value) : Expr {
+		public Expr Obj => obj;
+		public Token Name => name;
+		public Expr Value => value;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitSetExpr(this);
+		}
+	}
 	public class Logical(Expr left, Token operatorToken, Expr right) : Expr {
 		public Expr Left => left;
 		public Token OperatorToken => operatorToken;
@@ -73,6 +90,8 @@ public abstract class Expr
 		T VisitAssignExpr(Assign expr);
 		T VisitBinaryExpr(Binary expr);
 		T VisitCallExpr(Call expr);
+		T VisitGetExpr(Get expr);
+		T VisitSetExpr(Set expr);
 		T VisitLogicalExpr(Logical expr);
 		T VisitGroupingExpr(Grouping expr);
 		T VisitLiteralExpr(Literal expr);

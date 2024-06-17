@@ -9,6 +9,14 @@ public abstract class Stmt
 			return visitor.VisitBlockStmt(this);
 		}
 	}
+	public class Class(Token name, List<Stmt.Function> methods) : Stmt {
+		public Token Name => name;
+		public List<Stmt.Function> Methods => methods;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitClassStmt(this);
+		}
+	}
 	public class Expression(Expr expr) : Stmt {
 		public Expr Expr => expr;
 
@@ -70,6 +78,7 @@ public abstract class Stmt
 
 	public interface IVisitor<T> {
 		T VisitBlockStmt(Block stmt);
+		T VisitClassStmt(Class stmt);
 		T VisitExpressionStmt(Expression stmt);
 		T VisitIfStmt(If stmt);
 		T VisitFunctionStmt(Function stmt);

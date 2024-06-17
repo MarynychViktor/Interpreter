@@ -123,6 +123,31 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return function.Call(this, arguments);
     }
 
+    public object VisitGetExpr(Expr.Get expr)
+    {
+        var obj = Evaluate(expr.Obj);
+        if (obj is CsloxInstance instance)
+        {
+            return instance.Get(expr.Name);
+        }
+        
+        throw new RuntimeError(expr.Name, "Only instances have properties.");
+    }
+
+    public object VisitSetExpr(Expr.Set expr)
+    {
+        var obj = Evaluate(expr.Obj);
+
+        if (obj is not CsloxInstance instance)
+        {
+            throw new RuntimeError(expr.Name, "Only instances have fields.");
+        }
+
+        var value = Evaluate(expr.Value);
+        instance.Set(expr.Name, value);
+        return value;
+    }
+
     public object VisitLogicalExpr(Expr.Logical expr)
     {
         var left = Evaluate(expr.Left);
@@ -178,6 +203,14 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
     public object VisitBlockStmt(Stmt.Block stmt)
     {
         ExecuteBlock(stmt.Statements, new LanguageEnvironment(Environment));
+        return null;
+    }
+
+    public object VisitClassStmt(Stmt.Class stmt)
+    {
+        Environment.Define(stmt.Name.lexeme, null);
+        var klass = new CsloxClass(stmt.Name.lexeme);
+        Environment.Assign(stmt.Name, klass);
         return null;
     }
 

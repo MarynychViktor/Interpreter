@@ -31,6 +31,19 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         return null;
     }
 
+    public object VisitGetExpr(Expr.Get expr)
+    {
+        Resolve(expr);
+        return null;
+    }
+
+    public object VisitSetExpr(Expr.Set expr)
+    {
+        Resolve(expr.Value);
+        Resolve(expr.Obj);
+        return null;
+    }
+
     public object VisitLogicalExpr(Expr.Logical expr)
     {
         Resolve(expr.Left);
@@ -84,6 +97,13 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         BeginScope();
         Resolve(stmt.Statements);
         EndScope();
+        return null;
+    }
+
+    public object VisitClassStmt(Stmt.Class stmt)
+    {
+        Declare(stmt.Name);
+        Define(stmt.Name);
         return null;
     }
 

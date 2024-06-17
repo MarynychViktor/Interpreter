@@ -17,6 +17,8 @@ public class Program
                 "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operatorToken, Expr right",
                 "Call     : Expr callee, Token paren, List<Expr> arguments",
+                "Get      : Expr obj, Token name",
+                "Set      : Expr obj, Token name, Expr value",
                 "Logical  : Expr left, Token operatorToken, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
@@ -27,6 +29,7 @@ public class Program
 
         DefineAst(outputDir, "Stmt", [
             "Block      : List<Stmt> statements",
+            "Class      : Token name, List<Stmt.Function> methods",
             "Expression : Expr expr",
             "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
             "Function   : Token name, List<Token> funParams, List<Stmt> body",
