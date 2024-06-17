@@ -83,6 +83,14 @@ public abstract class Expr
 			return visitor.VisitThisExpr(this);
 		}
 	}
+	public class Super(Token keyword, Token method) : Expr {
+		public Token Keyword => keyword;
+		public Token Method => method;
+
+		public override T Accept<T>(IVisitor<T> visitor) {
+			return visitor.VisitSuperExpr(this);
+		}
+	}
 	public class Variable(Token name) : Expr {
 		public Token Name => name;
 
@@ -104,6 +112,7 @@ public abstract class Expr
 		T VisitLiteralExpr(Literal expr);
 		T VisitUnaryExpr(Unary expr);
 		T VisitThisExpr(This expr);
+		T VisitSuperExpr(Super expr);
 		T VisitVariableExpr(Variable expr);
 	}
 }

@@ -48,6 +48,12 @@ public class Parser(List<Token> tokens, int current = 0)
     private Stmt ClassDeclaration()
     {
         var name = Consume(TokenType.IDENTIFIER, "Expected class name.");
+
+        Expr.Variable? superclass = null;
+        if (Match(TokenType.LESS)) {
+            Consume(TokenType.IDENTIFIER, "Expect superclass name."); 
+            superclass = new Expr.Variable(Previous());
+        }
         Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
         var methods = new List<Stmt.Function>();
@@ -57,7 +63,7 @@ public class Parser(List<Token> tokens, int current = 0)
         }
         
         Consume(TokenType.RIGHT_BRACE, "Expect '{' before class body.");
-        return new Stmt.Class(name, methods);
+        return new Stmt.Class(name, superclass, methods);
     }
 
     private Stmt.Function Function(string kind)
@@ -429,6 +435,15 @@ public class Parser(List<Token> tokens, int current = 0)
         if (Match(TokenType.NUMBER, TokenType.STRING)) {
             return new Expr.Literal(Previous().literal);
         }
+        
+        if (Match(TokenType.SUPER)) {
+            Token keyword = Previous();
+            Consume(TokenType.DOT, "Expect '.' after 'super'.");
+            Token method = Consume(TokenType.IDENTIFIER,
+                "Expect superclass method name.");
+            return new Expr.Super(keyword, method);
+        }
+
         if (Match(TokenType.THIS)) return new Expr.This(Previous());
 
         if (Match(TokenType.LEFT_PAREN)) {

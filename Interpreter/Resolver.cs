@@ -80,6 +80,20 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         return null;
     }
 
+    public object VisitSuperExpr(Expr.Super expr)
+    {
+        if (currentClass == ClassType.NONE) {
+            Cslox.Error(expr.Keyword,
+                "Can't use 'super' outside of a class.");
+        } else if (currentClass != ClassType.SUBCLASS) {
+            Cslox.Error(expr.Keyword,
+                "Can't use 'super' in a class with no superclass.");
+        }
+
+        ResolveLocal(expr, expr.Keyword);
+        return null;
+    }
+
     public object VisitVariableExpr(Expr.Variable expr)
     {
         if (_scopes.Count > 0 &&
@@ -118,6 +132,22 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         currentClass = ClassType.CLASS;
         Declare(stmt.Name);
         Define(stmt.Name);
+
+        if (stmt.Superclass != null && stmt.Name.lexeme.Equals(stmt.Superclass.Name.lexeme)) {
+            Cslox.Error(stmt.Superclass.Name, "A class can't inherit from itself.");
+        }
+
+        if (stmt.Superclass != null)
+        {
+            currentClass = ClassType.SUBCLASS;
+            Resolve(stmt.Superclass);
+        }
+
+        if (stmt.Superclass != null) {
+            BeginScope();
+            _scopes.Peek().Add("super", true);
+        }
+
         BeginScope();
 
         _scopes.Peek().Add("this", true);
@@ -133,6 +163,8 @@ public class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVi
         }
         
         EndScope();
+        if (stmt.Superclass != null) EndScope();
+
         currentClass = enclosingClass;
         return null;
     }
@@ -273,4 +305,5 @@ enum ClassType
 {
     NONE,
     CLASS,
+    SUBCLASS,
 }

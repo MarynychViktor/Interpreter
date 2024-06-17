@@ -9,8 +9,9 @@ public abstract class Stmt
 			return visitor.VisitBlockStmt(this);
 		}
 	}
-	public class Class(Token name, List<Stmt.Function> methods) : Stmt {
+	public class Class(Token name, Expr.Variable superclass, List<Stmt.Function> methods) : Stmt {
 		public Token Name => name;
+		public Expr.Variable Superclass => superclass;
 		public List<Stmt.Function> Methods => methods;
 
 		public override T Accept<T>(IVisitor<T> visitor) {

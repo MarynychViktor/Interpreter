@@ -187,6 +187,20 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return LookUpVariable(expr.Keyword, expr);
     }
 
+    public object VisitSuperExpr(Expr.Super expr)
+    {
+        int distance = _locals[expr];
+        var superclass = (CsloxClass)Environment.GetAt(distance, "super");
+        var obj = (CsloxInstance)Environment.GetAt(distance - 1, "this");
+        var method = superclass.FindMethod(expr.Method.lexeme);
+
+        if (method == null) {
+            throw new RuntimeError(expr.Method, "Undefined property '" + expr.Method.lexeme + "'.");
+        }
+
+        return method.Bind(obj);
+    }
+
     public object VisitVariableExpr(Expr.Variable expr)
     {
         return LookUpVariable(expr.Name, expr);
@@ -213,7 +227,22 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitClassStmt(Stmt.Class stmt)
     {
+        object? superclass = null;
+        if (stmt.Superclass != null) {
+            superclass = Evaluate(stmt.Superclass);
+
+            if (superclass is not CsloxClass) {
+                throw new RuntimeError(stmt.Superclass.Name, "Superclass must be a class.");
+            }
+        }
+
         Environment.Define(stmt.Name.lexeme, null);
+        
+        if (stmt.Superclass != null) {
+            Environment = new LanguageEnvironment(Environment);
+            Environment.Define("super", superclass);
+        }
+
         var methods = new Dictionary<string, CsloxFunction>();
 
         foreach (var method in stmt.Methods)
@@ -222,7 +251,10 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
             methods.Add(method.Name.lexeme, function);
         }
 
-        var klass = new CsloxClass(stmt.Name.lexeme, methods);
+        var klass = new CsloxClass(stmt.Name.lexeme, (CsloxClass)superclass, methods);
+        if (superclass != null) {
+            Environment = Environment.Enclosing;
+        }
         Environment.Assign(stmt.Name, klass);
         return null;
     }

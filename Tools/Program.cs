@@ -24,13 +24,14 @@ public class Program
                 "Literal  : Object value",
                 "Unary    : Token operatorToken, Expr right",
                 "This     : Token keyword",
+                "Super    : Token keyword, Token method",
                 "Variable : Token name",
             ]
         );
 
         DefineAst(outputDir, "Stmt", [
             "Block      : List<Stmt> statements",
-            "Class      : Token name, List<Stmt.Function> methods",
+            "Class      : Token name, Expr.Variable superclass, List<Stmt.Function> methods",
             "Expression : Expr expr",
             "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
             "Function   : Token name, List<Token> funParams, List<Stmt> body",

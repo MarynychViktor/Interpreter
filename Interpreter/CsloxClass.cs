@@ -3,11 +3,13 @@ namespace Interpreter;
 
 public class CsloxClass : ICsloxCallable
 {
+    public CsloxClass? Superclass { get; }
     private readonly Dictionary<string, CsloxFunction> _methods;
     public string Name { get; }
 
-    public CsloxClass(string name, Dictionary<string, CsloxFunction> methods)
+    public CsloxClass(string name, CsloxClass? superclass, Dictionary<string, CsloxFunction> methods)
     {
+        Superclass = superclass;
         _methods = methods;
         Name = name;
     }
@@ -37,6 +39,11 @@ public class CsloxClass : ICsloxCallable
     {
         if (_methods.ContainsKey(name)) {
             return _methods[name];
+        }
+
+        if (Superclass != null)
+        {
+            return Superclass.FindMethod(name);
         }
 
         return null;

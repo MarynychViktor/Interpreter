@@ -1,10 +1,19 @@
-class Cake {
-  taste() {
-    var adjective = "delicious";
-    print "The " + this.flavor + " cake is " + adjective + "!";
+class A {
+  method() {
+    print "A method";
   }
 }
 
-var cake = Cake();
-cake.flavor = "German chocolate";
-cake.taste();
+class B < A {
+  method() {
+    print "B method";
+  }
+
+  test() {
+    super.method();
+  }
+}
+
+class C < B {}
+
+C().test();
